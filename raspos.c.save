@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-void id_rmc(char buffer[]);
+void id_filt(char buffer[]);
 
 /* baudrate settings are defined in <asm/termbits.h>, which is
 included by <termios.h> */
@@ -110,7 +110,7 @@ printf("%s --Found",token);
 printf("%s \n",token);
 token = strtok(NULL,",");
 }*/
-id_rmc(buf);
+id_filt(buf);
 //printf(":%s:%d\n", buf, res);
 }
 /* restore the old port settings */
@@ -122,67 +122,25 @@ tcsetattr(fd,TCSANOW,&oldtio);
 
 
 
-void id_rmc(char buffer[]){
+void id_filt(char buffer[]){
 char *fil;
-int i=0 ,j=0,d=0;
-double lat,lng;
-
+int i=0 , j=0;
 fil=strtok(buffer,",");
 while(fil!=NULL){
 //printf("%s \n",fil);
 if(strcmp("$GNRMC",fil)==0){
 i=0;
-j=1;
 printf("%s --FOUND %d\n",fil,i);
 }
-
-if(i==1 && j==1){
-printf("Time:%s %f\n",fil,atof(fil));
-}
-if(i==2 && j==1){
-if(strcmp("A",fil)==0){
-printf("%s \n",fil);
-j=1;
-}else if(strcmp("V",fil)==0){
-j=0;
-}
-}
-
-if(i==3 && j==1){
-lat = atof(fil);
-printf("Lat:%s %f \n",fil,lat);
-}
-if(i==4 && j==1){
-printf("%s \n",fil);
-}
-
-if(i==5 && j==1){
-lng = atof(fil);
-printf("Lng:%s %f\n",fil,lng);
-}
-
-if(i==6 && j==1){
-printf("%s \n ",fil);
-}
-
-if(i==7 && j==1){
-printf("spd:%s %f \n",fil,atof(fil));
-}
-
-if(i==8 && j==1){
-if(atof(fil) >=0.0 && atof(fil) <=360.0){
-printf("Head:%s %f -- \n",fil,atof(fil));
-d=1;
-}
-else{
-d=0;
-printf("Date:%s %d \n",fil,atoi(fil));
-}
-}
-if(i==9 && j==1 && d==1){
-printf("Date:%s %d \n",fil,atoi(fil));
-}
 i+=1;
+if(strcmp("$GNGGA",fil)==0){
+j=0
+printf("%s --FOUND %d\n",fil,j);
+}
+j+=1;
+printf("%s %d %d %ls %ls\n",fil,i,j,k,l);
+
 fil=strtok(NULL,",");
 }
+
 }
