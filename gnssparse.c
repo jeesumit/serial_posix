@@ -10,7 +10,9 @@
 void id_filter(char buffer[]);
 float lat_filt(float def);
 float lng_filt(float kef);
-
+double lat,lng,vel,head,hdop,hgt;
+long int time ,date;
+int nsv,gpsqa;
 /* baudrate settings are defined in <asm/termbits.h>, which is
 included by <termios.h> */
 #define BAUDRATE B9600
@@ -26,7 +28,7 @@ int main()
 int fd,c, res;
 struct termios oldtio,newtio;
 char buf[255];
-char *token;
+
 /*
 Open modem device for reading and writing and not as controlling tty
 because we don't want to get killed if linenoise sends CTRL−C.
@@ -89,7 +91,7 @@ token = strtok(NULL,",");
 //printf(":%s:%d\n", buf, res);
 id_filter(buf);
 //id_gga(buf);
-//printf(":%s:%d\n", buf, res);
+printf("%ld %ld %f %f %f %f %f %f\n",time,date,vel,lat,lng,head,hdop,hgt);
 }
 /* restore the old port settings */
 tcsetattr(fd,TCSANOW,&oldtio);
@@ -103,7 +105,6 @@ tcsetattr(fd,TCSANOW,&oldtio);
 void id_filter(char buffer[]){
 char *fil;
 int i=0 ,j=0,d=0,k=0,l=0;
-double lat,lng,lata,lnga;
 
 fil=strtok(buffer,",");
 while(fil!=NULL){
@@ -122,7 +123,8 @@ printf("%s --FOUND %d\n",fil,k);
 
 
 if(i==1 && j==1){
-printf("Time:%s %f\n",fil,atof(fil));
+time=atoi(fil);
+//printf("Time:%s %f\n",fil,atof(fil));
 }
 if(i==2 && j==1){
 if(strcmp("A",fil)==0){
@@ -135,15 +137,16 @@ j=0;
 
 if(i==3 && j==1){
 lat = lat_filt(atof(fil));
-printf("Lat:%f\n",lat);
+//printf("Lat:%f\n",lat);
 }
 if(i==4 && j==1){
 printf("%s \n",fil);
 }
 
 if(i==5 && j==1){
+//lngk = fil;
 lng = lng_filt(atof(fil));
-printf("Lng:%f\n",lng);
+//printf("Lng:%f\n",lng);
 }
 
 if(i==6 && j==1){
@@ -151,38 +154,43 @@ printf("%s \n ",fil);
 }
 
 if(i==7 && j==1){
-printf("spd:%s %f \n",fil,atof(fil));
+vel=atof(fil);
+//printf("spd:%s %f \n",fil,atof(fil));
 }
 
 if(i==8 && j==1){
 if(atof(fil) >=0.0 && atof(fil) <=360.0){
-printf("Head:%s %f -- \n",fil,atof(fil));
+//printf("Head:%s %f -- \n",fil,atof(fil));
+head=atof(fil);
 d=1;
 }
 else{
 d=0;
-printf("Date:%s %d \n",fil,atoi(fil));
+date = atoi(fil);
+//printf("Date:%s %d \n",fil,atoi(fil));
 }
 }
 if(i==9 && j==1 && d==1){
-printf("Date:%s %d \n",fil,atoi(fil));
+date=atoi(fil);
+//printf("Date:%s %d \n",fil,atoi(fil));
 }
 i+=1;
 /*------------------------------*/
 if(k==1 && l==1){
-printf("Time:%s %f\n",fil,atof(fil));
+time = atoi(fil);
+//printf("Time:%s %f\n",fil,atof(fil));
 }
 if(k==2 && l==1){
-lata = lat_filt(atof(fil));
-printf("Lat:%f \n",lata);
+lat = lat_filt(atof(fil));
+//printf("Lat:%f \n",lat);
 }
 if(k==3 && l==1){
 printf("%s \n",fil);
 }
 
 if(k==4 && l==1){
-lnga = lng_filt(atof(fil));
-printf("Lng:%f\n",lnga);
+lng = lng_filt(atof(fil));
+//printf("Lng:%f\n",lng);
 }
 
 if(k==5 && l==1){
@@ -190,20 +198,24 @@ printf("%s \n ",fil);
 }
 
 if(k==6 && l==1){
-printf("GPS Quality indicator:%s %d \n",fil,atoi(fil));
+gpsqa = atoi(fil);
+//printf("GPS Quality indicator:%s %d \n",fil,atoi(fil));
 }
 
 if(k==7 && l==1){
-printf("Number of SV:%s %d \n",fil,atoi(fil));
+nsv = atoi(fil);
+//printf("Number of SV:%s %d \n",fil,atoi(fil));
 }
 
 if(k==8 && l==1){
-printf("HDOP:%s %f \n",fil,atof(fil));
+hdop = atof(fil);
+//printf("HDOP:%s %f \n",fil,atof(fil));
 }
 
 
 if(k==9 && l==1){
-printf("Orthometric height:%s %f \n",fil,atof(fil));
+hgt = atof(fil);
+//printf("Orthometric height:%s %f \n",fil,atof(fil));
 }
 
 
